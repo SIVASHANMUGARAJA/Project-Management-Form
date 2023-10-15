@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this tProjlate file, choose Tools | TProjlates
+and open the tProjlate in the editor.
+-->
+<html lang="en">
+<head>
+<title>Bootstrap Example</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet"
+href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script
+src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script
+src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="container">
+<h1><center>Project Management Form</center></h1>
+<br></br>
+<form id="ProjForm" method="post">
+<div class="form-group">
+<span><label for="ProjId">Project ID:</label> <label id="ProjIdMsg">
+</label></span>
+<input type="text" class="form-control" name="ProjId" id="ProjId"
+placeholder="Enter Project ID" required>
+</div>
+<div class="form-group">
+<label for="ProjName">Project Name:</label>
+<input type="text" class="form-control" id="ProjName"
+placeholder="Enter Project Name" name="ProjName">
+</div>
+<div class="form-group">
+<label for="ProjAssigned">Project Assigned To:</label>
+<input type="text" class="form-control" id="ProjAssigned"
+placeholder="Enter The Person" name="ProjAssigned">
+</div>
+<div class="form-group">
+<label for="Projdate">Project Assigned Date:</label>
+<input type="date" class="form-control" id="Projdate" placeholder="Assigned Date" name="Projdate">
+</div>
+<div class="form-group">
+<label for="Projdeadline">Project Deadline:</label>
+<input type="date" class="form-control" id="Projdeadline" placeholder="Enter The Deadline" name="Projdeadline">
+</div>
+<input type="button" class="btn btn-primary" id="ProjSave" value="Save"
+onclick="saveEmployee();">
+</form>
+</div>
+<script>
+$("#ProjId").focus();
+function validateAndGetFormData() {
+var ProjIdVar = $("#ProjId").val();
+if (ProjIdVar === "") {
+alert("Project ID Required Value");
+$("#ProjId").focus();
+return "";
+}
+var ProjNameVar = $("#ProjName").val();
+if (ProjNameVar === "") {
+alert("Project Name is Required Value");
+$("#ProjName").focus();
+return "";
+}
+var ProjAssignedVar = $("#ProjAssigned").val();
+if (ProjAssignedVar === "") {
+alert("Assigned Person is Required Value");
+$("#ProjAssigned").focus();
+return "";
+}
+var ProjdateVar = $("#Projdate").val();
+if (ProjdateVar === "") {
+alert("Assigned Date is Required Value");
+$("#Projdate").focus();
+return "";
+}
+var ProjdeadlineVar = $("#Projdeadline").val();
+if (ProjdeadlineVar === "") {
+alert("Project Deadline is Required Value");
+$("#Projdeadline").focus();
+return "";
+}
+var jsonStrObj = {
+ProjId: ProjIdVar,
+ProjName: ProjNameVar,
+ProjAssigned: ProjAssignedVar,
+Projdate: ProjdateVar,
+Projdeadline: ProjdeadlineVar,
+};
+return JSON.stringify(jsonStrObj);
+}
+// This method is used to create PUT Json request.
+function createPUTRequest(connToken, jsonObj, dbName, relName) {
+var putRequest = "{\n"
++ "\"token\" : \""
++ connToken
++ "\","
++ "\"dbName\": \""
++ dbName
++ "\",\n" + "\"cmd\" : \"PUT\",\n"
++ "\"rel\" : \""
++ relName + "\","
++ "\"jsonStr\": \n"
++ jsonObj
++ "\n"
++ "}";
+return putRequest;
+}
+function executeCommand(reqString, dbBaseUrl, apiEndPointUrl) {
+var url = dbBaseUrl + apiEndPointUrl;
+var jsonObj;
+$.post(url, reqString, function (result) {
+jsonObj = JSON.parse(result);
+}).fail(function (result) {
+var dataJsonObj = result.responseText;
+jsonObj = JSON.parse(dataJsonObj);
+});
+return jsonObj;
+}
+function resetForm() {
+$("#ProjId").val("")
+$("#ProjName").val("");
+$("#ProjAssigned").val("");
+$("#Projdate").val("");
+$("#Projdeadline").val("");
+$("#ProjId").focus();
+}
+function saveEmployee() {
+var jsonStr = validateAndGetFormData();
+if (jsonStr === "") {
+return;
+}
+var putReqStr = createPUTRequest("90931607|-31949331967169428|90961696",
+jsonStr, "DETAILS", "PROJ-REL");
+alert(putReqStr);
+jQuery.ajaxSetup({async: false});
+var resultObj = executeCommand(putReqStr,
+"http://api.login2explore.com:5577", "/api/iml");
+alert(JSON.stringify(resultObj));
+jQuery.ajaxSetup({async: true});
+resetForm();
+}
+</script>
+</body>
+</html>
